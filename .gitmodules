@@ -1,0 +1,6 @@
+[submodule "contrastive-unpaired-translation"]
+	path = contrastive-unpaired-translation
+	url = https://github.com/Dennismagnusson/contrastive-unpaired-translation
+[submodule "Real-ESRGAN"]
+	path = Real-ESRGAN
+	url = https://github.com/dennismagnusson/Real-ESRGAN

@@ -64,7 +64,7 @@ def forward_cut(method, im, size=512):
   return output[0][0]
 
 for i in range(1, 15):
-  with Image.open('dataset/testA/{}.jpg'.format(i) as img:
+  with Image.open('dataset/testA/{}.jpg'.format(i)) as img:
   #with Image.open('/content/IMG_20220428_155512.jpg') as img:
     #forward_esrgan('finetuned', img)
     for method in ['cut', 'fastcut']:

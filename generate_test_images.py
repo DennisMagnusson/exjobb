@@ -15,7 +15,7 @@ def forward_esrgan(method, im):
   sess = pretrained_session if method == 'pretrained' else finetuned_session
   N = 64
   t = time.time()
-  batch_size = 1
+  batch_size = 32
   pad_x = N-im.shape[0]%N if im.shape[0] % N != 0 else 0
   pad_y = N-im.shape[1]%N if im.shape[1] % N != 0 else 0
   im = np.lib.pad(im, pad_width=((pad_x, 0), (pad_y, 0), (0, 0)))
@@ -23,9 +23,12 @@ def forward_esrgan(method, im):
   tiles_shape = tiles.shape
   tiles = tiles.transpose((0, 3, 1, 2))
   outputs = []
-  for i in range(len(tiles)):
-    inputs = {sess.get_inputs()[0].name: tiles[i:i+1]}
-    outputs.append(sess.run(None, inputs))
+  for i in range(0, len(tiles), batch_size):
+    jump_len = min(batch_size, len(tiles) - i)
+    inputs = {sess.get_inputs()[0].name: tiles[i:i+jump_len]}
+    result = sess.run(None, inputs)
+    for r in result:
+      outputs.append(r)
 
   print('method: {}, size = {}, time_passed = {}'.format(method, im.size, time.time() - t))
 

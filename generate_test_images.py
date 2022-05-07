@@ -75,11 +75,11 @@ for i in range(1, 15):
 
       img_blended = Image.blend(img2.resize(img.size, resample=Image.BICUBIC), img, 0.75)
       img_blended.save('results/{}_blend/{}.png'.format(method, i))
-
+      """
       for local_method in ['pretrained', 'finetuned']:
         output = forward_esrgan(local_method, img2)
         output.save('results/{}_{}/{}.png'.format(method, local_method, i))
         
         output = forward_esrgan(local_method, img_blended)
         output.save('results/{}_blend_{}/{}.png'.format(method, local_method, i))
-
+      """

@@ -48,6 +48,12 @@ def resize_image(im, max_axis=512):
   ratio = max_axis / max(im.size[0], im.size[1])
   return im.resize((int(im.size[0]*ratio), int(im.size[1]*ratio)))
 
+def normalize(inp):
+  inp[0] = (inp[0] - -0.485/0.229) / (1/0.229)*255.
+  inp[1] = (inp[1] - -0.465/0.224) / (1/0.224)*255.
+  inp[2] = (inp[2] - -0.406/0.225) / (1/0.255)*255.
+  return inp
+
 
 cut_session = onnxruntime.InferenceSession('contrastive-unpaired-translation/fastcut_dynamic.onnx')
 fastcut_session = onnxruntime.InferenceSession('contrastive-unpaired-translation/cut_dynamic.onnx')
@@ -61,7 +67,7 @@ def forward_cut(method, im, size=512):
   output = sess.run(None, inputs)
   print('method: {}, size: {}, time_passed = {}'.format(method, size, time.time() - t))
 
-  return output[0][0]
+  return np.transpose(normalize(output[0][0]), (1, 2, 0))
 
 for i in range(1, 15):
   with Image.open('dataset/testA/{}.jpg'.format(i)) as img:
@@ -69,12 +75,16 @@ for i in range(1, 15):
     #forward_esrgan('finetuned', img)
     for method in ['cut', 'fastcut']:
       img2 = forward_cut(method, img)
-      print(img2.shape)
-      img2 = Image.fromarray(np.uint8(img2[0])).convert('RGB')
+      img2 = Image.fromarray(np.uint8(img2)).convert('RGB')
       img2.save('results/{}/{}.png'.format(method, i))
 
-      img_blended = Image.blend(img2.resize(img.size, resample=Image.BICUBIC), img, 0.75)
+      img_blended = Image.blend(img2.resize(img.size, resample=Image.BICUBIC), img, 0.33)
       img_blended.save('results/{}_blend/{}.png'.format(method, i))
+
+      img2 = forward_cut(method, img, size=2048)
+      img2 = Image.fromarray(np.uint8(img2)).convert('RGB')
+      img2.save('results/{}_2048/{}.png'.format(method, i))
+
       """
       for local_method in ['pretrained', 'finetuned']:
         output = forward_esrgan(local_method, img2)

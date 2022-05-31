@@ -9,7 +9,6 @@ import time
 pretrained_session = onnxruntime.InferenceSession('Real-ESRGAN/pretrained.onnx')
 finetuned_session = onnxruntime.InferenceSession('Real-ESRGAN/finetuned.onnx')
 def forward_esrgan(method, im):
-  #im = im.resize((128, 128)) # TODO DELET THIS
   if type(im) != np.ndarray:
     im = np.asarray(im, dtype=np.float32)
   sess = pretrained_session if method == 'pretrained' else finetuned_session
@@ -71,8 +70,6 @@ def forward_cut(method, im, size=512):
 
 for i in range(1, 15):
   with Image.open('dataset/testA/{}.jpg'.format(i)) as img:
-  #with Image.open('/content/IMG_20220428_155512.jpg') as img:
-    #forward_esrgan('finetuned', img)
     for method in ['cut', 'fastcut']:
       img2 = forward_cut(method, img)
       img2 = Image.fromarray(np.uint8(img2)).convert('RGB')
@@ -85,11 +82,9 @@ for i in range(1, 15):
       img2 = Image.fromarray(np.uint8(img2)).convert('RGB')
       img2.save('results/{}_2048/{}.png'.format(method, i))
 
-      """
       for local_method in ['pretrained', 'finetuned']:
         output = forward_esrgan(local_method, img2)
         output.save('results/{}_{}/{}.png'.format(method, local_method, i))
         
         output = forward_esrgan(local_method, img_blended)
         output.save('results/{}_blend_{}/{}.png'.format(method, local_method, i))
-      """

@@ -117,13 +117,7 @@ for i in range(1, 15):
         img_test.save('tmplocaleval/{}/{}.png'.format(method, i))
         local_ssims[method].append(compare_ssim(img_gt, img_test, GPU=False))
         psnrs[method].append(PSNR(np.array(img_gt), np.array(img_test)))
-        #local_fids[method].append(fid_score.calculate_fid_given_paths(['dataset/testB'.format(i), '../results/{}'.format(method, i)], device='cpu', dims=2048, batch_size=1))
 
-
-        #ssims[method].append(compare_ssim(img_gt, img_test, GPU=False))
-        #fids[method].append(fid_score.calculate_fid_given_paths(['dataset/testB'.format(i), '../results/{}'.format(method, i)], device='cpu', dims=2048, batch_size=1))
-
-# TODO Check if this is correct
 for method in local_fids.keys():
   local_fids[method].append(fid_score.calculate_fid_given_paths(['dataset/testBcrops', 'tmplocaleval/{}'.format(method)], device='cpu', dims=2048, batch_size=1, num_workers=0))
 
